@@ -1,0 +1,54 @@
+# -*- coding:utf-8 -*-
+#!/usr/bin/python
+
+import requests
+from bs4 import BeautifulSoup
+from openpyxl import Workbook
+import re
+
+def open_url(url):  
+    try:                #调用requests 获得URL
+        headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 '
+                               '(KHTML, like Gecko) Chrome/65.0.3325.146 Safari/537.36'}
+        response = requests.get(url, headers=headers)
+        return response
+    except:
+        print("failed!")
+
+def find_data(html): 
+    data = []   #调用Beau 找网页中的标签
+    soup = BeautifulSoup(html.text,'html.parser')
+    content = soup.find(id='Cnt-Main-Article-QQ')
+    target = content.find_all('p',style="TEXT-INDENT: 2em")
+
+    target = iter(target)
+    for each in target:
+    	if each.text.isnumeric():
+    		data.append([
+    			re.search(r'\[(.+)\]',next(target).text).group(),
+                re.search(r'\d.*',next(target).text).group(),
+                re.search(r'\d.*',next(target).text).group(),
+                re.search(r'\d.*',next(target).text).group()])
+
+    return data
+
+def to_excel(data):
+    wb=Workbook()
+    wb.guess_types = True
+    ws = wb.active
+    ws.append(['城市','平均房价','平均工资','房价工资比'])
+    for each in data:
+        ws.append(each)
+
+    wb.save('房价工资比.xlsx')
+
+
+def main():
+    url = 'https://news.house.qq.com/a/20170702/003985.htm'
+    html = open_url(url)
+    data = find_data(html)
+    to_excel(data)
+
+
+if __name__ == '__main__':
+	main()
