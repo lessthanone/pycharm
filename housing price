@@ -1,6 +1,10 @@
 # -*- coding:utf-8 -*-
 #!/usr/bin/python
 
+"""
+爬取腾讯房产，获得中国主要城市的房价工资比，并写入Excel
+"""
+
 import requests
 from bs4 import BeautifulSoup
 from openpyxl import Workbook
