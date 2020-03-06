@@ -1,0 +1,36 @@
+#-*- coding:utf-8 -*-
+from bs4 import BeautifulSoup
+from colorama import init, Fore, Back
+import urllib.request
+import urllib.parse
+
+init(autoreset=True)
+
+def inquery(text):
+    url = 'http://www.iciba.com/'
+    #text = input('请输入要查询的字符：\n')
+    text_url = url + urllib.parse.quote(text)
+
+    dictionary = urllib.request.urlopen(text_url)
+    html = dictionary.read()
+
+    soup = BeautifulSoup(html, 'lxml')
+    tag_soup = soup.find(class_='base-list switch_part')
+
+    if tag_soup is None:
+        print(Fore.YELLOW + Back.RESET +'单词不存在耶0.0 重新输入？\n', '----' * 5)
+    else:
+        text_soup = tag_soup.find_all(class_='clearfix')
+        for i in range(len(text_soup)):
+            clean_soup = text_soup[i].get_text()
+            print(Fore.LIGHTWHITE_EX + Back.GREEN + clean_soup.strip())
+            print('----' * 3, '\n')
+
+
+while True:
+    text = input('输入要查询的单词：(或按q退出)\n')
+    if text == 'q':
+        break
+    else:
+        inquery(text)
+
